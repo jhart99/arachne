@@ -1,0 +1,12 @@
+[Unit]
+Description=Reboot
+After=docker.service
+After=fleet.service
+Requires=docker.service
+
+[Service]
+ExecPreStart=/usr/bin/docker rm -f $(docker ps -a -q)
+ExecStart=/usr/sbin/reboot
+
+[X-Fleet]
+Global=true

@@ -1,0 +1,15 @@
+[Unit]
+Description=HDFS Namenode Announcer
+BindsTo=hdfs-namenode.service
+After=hdfs-namenode.service
+
+[Service]
+ExecStart=/bin/bash -c "while true; do \
+        etcdctl set --ttl 60 /skydns/local/vogt/sky/namenode {\\\"host\\\":\\\"%H\\\"}; \
+        sleep 45; \
+        done"
+Restart=always
+RestartSec=1s
+
+[X-Fleet]
+MachineOf=hdfs-namenode.service

@@ -1,0 +1,2 @@
+#!/bin/bash
+fleetctl destroy mesos-slave@{1..21}.service mesos-slave-presence@{1..21}.service

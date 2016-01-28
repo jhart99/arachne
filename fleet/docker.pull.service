@@ -1,0 +1,14 @@
+[Unit]
+Description=Refresh Docker images
+After=docker.service
+After=fleet.service
+Requires=docker.service
+
+[Service]
+ExecStartPre=/bin/sh -c "/usr/bin/docker ps -a | /usr/bin/grep jhart99 | /usr/bin/awk '{print $2'} | /usr/bin/sort | /usr/bin/uniq | /usr/bin/xargs -n 1 /usr/bin/docker pull"
+ExecStart=/usr/bin/echo "Docker pull complete"
+Restart=always
+RestartSec=3600
+
+[X-Fleet]
+Global=true

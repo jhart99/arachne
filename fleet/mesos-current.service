@@ -1,0 +1,12 @@
+[Unit]
+Description=Mesos Master Updater
+
+[Service]
+ExecStart=/bin/bash -c " \
+    while true; do \
+        etcdctl set --ttl 60 /skydns/local/vogt/sky/mesos-master-%i {\\\"host\\\":\\\"%H.vogt.local\\\"} && \
+        etcdctl set --ttl 60 /skydns/local/vogt/sky/mesos-master/%i {\\\"host\\\":\\\"%H.vogt.local\\\"}; \
+        sleep 45; \
+    done"
+Restart=always
+RestartSec=1s

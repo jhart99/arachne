@@ -1,0 +1,2 @@
+#!/bin/bash
+fleetctl start registry.service registry-presence.service

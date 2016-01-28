@@ -1,0 +1,8 @@
+[Mount]
+What=/home/core
+Where=/mnt/work
+Type=none
+Options=bind
+
+[X-Fleet]
+Global=true

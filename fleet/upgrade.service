@@ -1,0 +1,9 @@
+[Unit]
+Description=Force Upgrade
+After=fleet.service
+
+[Service]
+ExecStart=/usr/bin/update_engine_client -update
+
+[X-Fleet]
+Global=true

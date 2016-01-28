@@ -1,0 +1,17 @@
+[Unit]
+Description=chronos announcer
+BindsTo=chronos@%i.service
+After=chronos@%i.service
+
+[Service]
+ExecStart=/bin/bash -c " \
+    while true; do \
+        etcdctl set --ttl 60 /skydns/local/vogt/sky/chronos-%i {\\\"host\\\":\\\"%H\\\"} && \
+        etcdctl set --ttl 60 /skydns/local/vogt/sky/chronos/%i {\\\"host\\\":\\\"%H\\\"} && \
+        sleep 45; \
+    done"
+Restart=always
+RestartSec=1s
+
+[X-Fleet]
+MachineOf=chronos@%i.service

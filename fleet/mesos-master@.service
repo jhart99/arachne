@@ -1,0 +1,24 @@
+[Unit]
+Description=Mesos Master
+After=docker.service
+After=fleet.service
+After=flanneld.service
+Requires=docker.service
+Requires=flanneld.service
+
+[Service]
+TimeoutStartSec=900
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill $(docker ps -a -q -f name=mesos-master)"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm $(docker ps -a -q -f name=mesos-master)"
+ExecStartPre=/usr/bin/docker pull vogt1005.scripps.edu:5000/mesos-master
+ExecStart=/usr/bin/bash -c \
+"/usr/bin/docker run --rm --name mesos-master-%i -e MESOS_MASTER_ID=%i \
+-e ZK_LIST=zk://zk-1.sky.vogt.local:2181,zk-2.sky.vogt.local:2181,zk-3.sky.vogt.local:2181/mesos \
+--net=host -p 5050:5050 vogt1005.scripps.edu:5000/mesos-master"
+ExecStop=-/usr/bin/docker rm -f mesos-master-%i
+Restart=always
+RestartSec=10s
+
+[X-Fleet]
+Conflicts=mesos-master@*.service
+MachineMetadata=role=services

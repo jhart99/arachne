@@ -1,0 +1,10 @@
+#!/bin/bash
+hdfs namenode -format -force
+
+until ping -c 1 namenode.sky.vogt.local; do
+    echo "namenode still not resolved"
+    sleep 1
+done
+echo "namenode is resolved, continuing startup"
+
+hdfs namenode

@@ -1,0 +1,17 @@
+[Unit]
+Description=Mesos Master Announcer
+BindsTo=mesos-master@%i.service
+After=mesos-master@%i.service
+
+[Service]
+ExecStart=/bin/bash -c " \
+    while true; do \
+        etcdctl set --ttl 60 /skydns/local/vogt/sky/mesos-master-%i {\\\"host\\\":\\\"%H\\\"} && \
+        etcdctl set --ttl 60 /skydns/local/vogt/sky/mesos-master/%i {\\\"host\\\":\\\"%H\\\"}; \
+        sleep 45; \
+    done"
+Restart=always
+RestartSec=1s
+
+[X-Fleet]
+MachineOf=mesos-master@%i.service

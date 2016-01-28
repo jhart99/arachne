@@ -1,0 +1,12 @@
+[Unit]
+Description=Registry Announcer
+BindsTo=registry.service
+After=registry.service
+
+[Service]
+ExecStart=/bin/bash -c "while [ -n \"$IP\"]; do IP=$(docker inspect -f '{{.NetworkSettings.IPAddress}}' zk-%i); sleep 1; done; while true; do etcdctl set --ttl 60 /skydns/local/vogt/sky/registry {\\\"host\\\":\\\"$IP\\\"}; sleep 45; done"
+Restart=always
+RestartSec=60s
+
+[X-Fleet]
+MachineOf=registry.service

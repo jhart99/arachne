@@ -1,0 +1,134 @@
+#cloud-config
+
+write-files:
+  - path: /etc/conf.d/nfs
+    permissions: '0644'
+    content: |
+      OPTS_RPC_MOUNTD=""
+  - path: /etc/profile.d/etcdctl.sh
+    permissions: 0644
+    owner: core
+    content: |
+      # configure etcdctl to work with our etcd servers set above
+      export ETCDCTL_PEERS="http://vogt1005.vogt.local:2379"
+  - path: /etc/profile.d/fleetctl.sh
+    permissions: 0644
+    owner: core
+    content: |
+      # configure fleetctl to work with our etcd servers set above
+      export FLEETCTL_ENDPOINT=unix:///var/run/fleet.sock
+      export FLEETCTL_EXPERIMENTAL_API=true
+    #  - path: /etc/systemd/network/jumbo.network
+    #    content: |
+    #        [Link]
+    #        MTUBytes=9216
+  - path: /tmp/reset-interfaces
+    permissions: 0700
+    owner: root
+    content: |
+        #!/bin/bash
+        logger "Resetting network interfaces"
+        interfaces=/sys/class/net/*
+        systemctl stop systemd-networkd
+        for int in $interfaces
+        do
+            subint=${int##*/}
+            if [ ${subint:0:1} == "e" ]; then
+                ip link set $subint down
+            fi
+        done
+        systemctl restart systemd-networkd
+        logger "Network reset"
+
+coreos:
+  fleet:
+      etcd-servers: "http://vogt1005.vogt.local:2379"
+  units:
+    - name: systemd-networkd.service
+      command: stop
+    - name: 00-jumbo.network
+      runtime: true
+      content: |
+        [Match]
+        Name=e*
+        [Link]
+        MTUBytes=9216
+        [Network]
+        DHCP=yes
+        [DHCP]
+        UseDomains=true
+#    - name: reset-interfaces.service
+#      command: start
+#      content: |
+#          [Unit]
+#          Description=Reset interfaces after boot
+#          After=network-online.target
+#          [Service]
+#          Type=oneshot
+#          ExecStart=/tmp/reset-interfaces
+    - name: systemd-networkd.service
+      command: start
+
+    - name: docker-tcp.socket
+      command: start
+      enable: true
+      content: |
+        [Unit]
+        Description=Docker Socket for API
+
+        [Socket]
+        ListenStream=2375
+        BindIPv6Only=both
+        Service=docker.service
+
+        [Install]
+        WantedBy=sockets.target
+    - name: etcd2.service
+      command: start
+    - name: fleet.service
+      command: start
+    - name: docker.service
+      command: start
+    - name: rpc-statd.service
+      command: start
+      enable: true
+    - name: mnt-seq.mount
+      command: start
+      content: |
+        [Mount]
+        What=192.168.1.1:/seq
+        Where=/mnt/seq
+        Type=nfs
+    - name: mnt-data.mount
+      command: start
+      content: |
+        [Mount]
+        What=192.168.1.2:/mnt/work
+        Where=/mnt/data
+        Type=nfs
+    - name: mesos_bootstrap.service
+      command: start
+      runtime: true
+      content: |
+        [Unit]
+        Description=Mesos Bootstrapper
+        After=docker.service
+        After=fleet.service
+        [Service]
+        TimeoutStartSec=900
+        ExecStartPre=/bin/sh -c "/usr/bin/docker pull jhart99/mesos"
+        ExecStart=/bin/sh -c "/usr/bin/docker rm -f mesos || true; /usr/bin/docker run --rm --name mesos --privileged --net=host -p 5050:5050 -p 5051:5051 -p 2888:2888 -p 3888:3888 -p 8080:8080 -p 4040:4040 -v /var/lib/docker/btrfs/subvolumes:/var/lib/docker/btrfs/subvolumes -v /var/run/docker.sock:/var/run/docker.sock -v /sys:/sys -e SERVER_LIST=vogt1005.vogt.local -e ZK_ID=1 jhart99/mesos"
+        ExecStop=/usr/bin/docker rm -f mesos
+        Restart=always
+        RestartSec=10s
+ssh_authorized_keys:
+        - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5CQmleVd/ydeHFEO6liUN31svzeJsMDtHbxIe5mNczfObNFyXAHXIbyy1h6pVuChKh+eINzy4IjxIBGI0wxM/6up03Bze9ryOyWmS8o28wLny/W5Nsi5kf6iw1vjPD8T2g5GYoXAvLkRxnfHJomOXCPFgBB24m1RkeBLuNIGjIpAG+C36RAX4RLBPiDruUZ8NKUuZYRrZIv4FMphF150a+KzmOAEbztHkZTUnrv3zjUnfC29LRyoyxNuLOgb01ifQJNaKgxE3ujvA3rPvmOJ33wJersS+54XWAFJkUCz3mDb+AInZEWVDgcaCIkpJTZMk8XeKaSysdqLHAmV4fxx3 jhart@desktopjh.scripps.edu
+users:
+        - name: jhart
+          groups:
+               - sudo
+               - docker
+               - systemd-journal
+          passwd: $6$rounds=4096$OcHoMUPdt09iZ9$VQ3D3S6lniHKKZmP8gvQs3MPpCOy6Gi7G6dBxIce03KJhOPUfD8J5wQ/iS7MfuiO9pbsh1lewefNTBlWG7I2I.
+          ssh-authorized-keys:
+                  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC5CQmleVd/ydeHFEO6liUN31svzeJsMDtHbxIe5mNczfObNFyXAHXIbyy1h6pVuChKh+eINzy4IjxIBGI0wxM/6up03Bze9ryOyWmS8o28wLny/W5Nsi5kf6iw1vjPD8T2g5GYoXAvLkRxnfHJomOXCPFgBB24m1RkeBLuNIGjIpAG+C36RAX4RLBPiDruUZ8NKUuZYRrZIv4FMphF150a+KzmOAEbztHkZTUnrv3zjUnfC29LRyoyxNuLOgb01ifQJNaKgxE3ujvA3rPvmOJ33wJersS+54XWAFJkUCz3mDb+AInZEWVDgcaCIkpJTZMk8XeKaSysdqLHAmV4fxx3 jhart@desktopjh.scripps.edu

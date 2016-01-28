@@ -1,0 +1,8 @@
+[Mount]
+What=192.168.1.2:/mnt/store
+Where=/mnt/store
+Type=nfs
+Options=vers=3
+
+[X-Fleet]
+Global=true

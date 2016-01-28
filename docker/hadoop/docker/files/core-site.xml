@@ -1,0 +1,6 @@
+<configuration>
+ <property>
+  <name>fs.default.name</name>
+  <value>hdfs://namenode.sky.vogt.local:8020</value>
+ </property>
+</configuration>

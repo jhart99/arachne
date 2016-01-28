@@ -1,0 +1,22 @@
+[Unit]
+Description=HDFS namenode
+After=docker.service
+After=fleet.service
+After=flanneld.service
+Requires=docker.service
+Requires=flanneld.service
+
+[Service]
+TimeoutStartSec=900
+ExecStartPre=-/usr/bin/docker kill $(docker ps -a -q -f name=hdfs-namenode)
+ExecStartPre=-/usr/bin/docker rm $(docker ps -a -q -f name=hdfs-namenode)
+ExecStartPre=/usr/bin/docker pull vogt1005.scripps.edu:5000/hdfs-namenode
+ExecStart=/usr/bin/bash -c \
+"/usr/bin/docker run --rm --name hdfs-namenode -v /mnt/work:/mnt/work \
+vogt1005.scripps.edu:5000/hdfs-namenode namenode"
+ExecStop=-/usr/bin/docker rm -f hdfs-namenode
+Restart=always
+RestartSec=10s
+
+[X-Fleet]
+MachineMetadata=role=services

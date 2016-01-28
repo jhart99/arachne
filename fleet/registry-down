@@ -1,0 +1,2 @@
+#!/bin/bash
+fleetctl destroy registry.service registry-presence.service

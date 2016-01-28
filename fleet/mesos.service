@@ -1,0 +1,23 @@
+[Unit]
+Description=Mesos
+After=docker.service
+After=fleet.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=900
+ExecStartPre=-/usr/bin/docker kill mesos
+ExecStartPre=-/usr/bin/docker rm mesos
+ExecStartPre=/usr/bin/docker pull jhart99/mesos
+ExecStart=/usr/bin/bash -c \
+"/usr/bin/docker run --rm --name mesos --privileged --net=host \
+-v /var/lib/docker/btrfs/subvolumes:/var/lib/docker/btrfs/subvolumes \
+-v /var/run/docker.sock:/var/run/docker.sock \
+-v /sys:/sys \
+-e SERVER_list=vogt1005.vogt.local -e ZK_ID=1 jhart99/mesos"
+ExecStop=-/usr/bin/docker rm -f mesos
+Restart=always
+RestartSec=10s
+
+[X-Fleet]
+Global=true

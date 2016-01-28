@@ -1,0 +1,16 @@
+[Unit]
+Description=HDFS Datanode Announcer
+BindsTo=hdfs-datanode@%i.service
+After=hdfs-datanode@%i.service
+
+[Service]
+ExecStart=/bin/bash -c " \
+    while true; do \
+        etcdctl set --ttl 60 /skydns/local/vogt/sky/datanode-%i {\\\"host\\\":\\\"%H\\\"}; \
+        sleep 45; \
+    done"
+Restart=always
+RestartSec=1s
+
+[X-Fleet]
+MachineOf=hdfs-datanode@%i.service

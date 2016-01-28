@@ -1,0 +1,24 @@
+[Unit]
+Description=Chronos
+After=docker.service
+After=fleet.service
+After=flanneld.service
+Requires=docker.service
+Requires=flanneld.service
+
+[Service]
+TimeoutStartSec=900
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill $(docker ps -a -q -f name=chronos)"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm $(docker ps -a -q -f name=chronos)"
+ExecStartPre=/usr/bin/docker pull jhart99/chronos
+ExecStart=/usr/bin/bash -c \
+"/usr/bin/docker run --rm --name chronos-%i \
+-e ZK_LIST=zk://zk-1.sky.vogt.local:2181,zk-2.sky.vogt.local:2181,zk-3.sky.vogt.local:2181/mesos \
+-e CHRONOS_ID=%i --net=host -p 8080:8080 jhart99/chronos"
+ExecStop=-/usr/bin/docker rm -f chronos-%i
+Restart=always
+RestartSec=10s
+
+[X-Fleet]
+MachineMetadata=role=services
+Conflicts=chronos@*.service

@@ -1,0 +1,22 @@
+[Unit]
+Description=Docker Registry
+After=docker.service
+After=fleet.service
+After=flanneld.service
+Requires=docker.service
+Requires=flanneld.service
+
+[Service]
+TimeoutStartSec=900
+ExecStartPre=-/usr/bin/docker kill $(docker ps -a -q -f name=registry)
+ExecStartPre=-/usr/bin/docker rm $(docker ps -a -q -f name=registry)
+ExecStartPre=/usr/bin/docker pull registry:2
+ExecStart=/usr/bin/bash -c \
+"/usr/bin/docker run --rm --name registry \
+registry:2"
+ExecStop=-/usr/bin/docker rm -f registry
+Restart=always
+RestartSec=10s
+
+[X-Fleet]
+MachineMetadata=role=services
