@@ -1,2 +1,0 @@
-#!/bin/bash
-fleetctl start hdfs-datanode@{1..20}.service hdfs-datanode-presence@{1..20}.service
