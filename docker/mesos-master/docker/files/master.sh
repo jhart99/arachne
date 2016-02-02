@@ -15,11 +15,10 @@ function start_master {
   echo mesos-master-${MESOS_MASTER_ID}.sky.vogt.local > /etc/mesos-master/hostname
 
   echo "info: Starting Mesos master..."
-
   /usr/bin/mesos-init-wrapper master &
   sleep 1
-  tail -f /var/log/mesos-master.INFO &
-  tail -f /var/log/mesos-master.WARNING &
+  tail -f /var/log/mesos/mesos-master.INFO &
+  tail -f /var/log/mesos/mesos-master.WARNING &
 
   # wait for the master to start
   sleep 1 && while [[ -z $(netstat -lnt | awk "\$6 == \"LISTEN\" && \$4 ~ \".5050\" && \$1 ~ tcp") ]] ; do

@@ -13,4 +13,5 @@ RUN apt-get update && \
 
 
 ADD files/slave.sh /usr/local/bin
+ADD files/mesos-init-wrapper /usr/bin
 CMD slave.sh
