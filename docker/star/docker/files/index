@@ -1,0 +1,59 @@
+#!/bin/bash
+# Run bash with -e exit on first error, -x add +command stream to sterr.
+# Remove -x for cleaner usage message
+
+# Check command line and provide usage and version information
+while getopts ":s:a:t:" opt; do
+  case $opt in
+    a)
+        annotationGtf=$OPTARG
+        ;;
+    s)
+        spikeInFa=$OPTARG
+        ;;
+    t)
+        tRnaGtf=$OPTARG
+        ;;
+    \?)
+        echo "Invalid option: -$OPTARG" >&2
+        exit 1
+        ;;
+    :)
+        echo "Option -$OPTARG requires an argument." >&2
+        exit 1
+        ;;
+  esac
+done
+# purge the options
+shift `expr $OPTIND - 1`
+if [ $# -lt 2 ]; then 
+    echo "index [-s spikeIn.fa] [-a annotation.gtf] [-t tRNA.gtf] \\"
+    echo "      genomeRef.fa outputStarIndexDir"
+    exit -1;
+fi
+genomeRefFa=$1
+starRefIndexDir=$2
+combinedGtf=${starRefIndexDir}/anno-tRNA-spikeIn.gtf
+
+# Make target dir and build index files
+mkdir -p ${starRefIndexDir}
+GTF.awk ${annotationGtf} ${tRnaGtf} ${spikeInFa} > ${combinedGtf}
+
+STAR --runMode genomeGenerate --genomeFastaFiles ${genomeRefFa} ${spikeInFa} --sjdbOverhang 100 \
+     --sjdbGTFfile ${combinedGtf} --runThreadN 12 --genomeDir ${starRefIndexDir}  \
+     --outFileNamePrefix ${starRefIndexDir}
+
+# Attempt to make bamCommentLines.txt, which should be reviewed. NOTE tabs handled by assignment.
+refComment="@CO\tREFID:$(basename ${genomeRefFa%.*})"
+echo -e ${refComment} > ${starRefIndexDir}/bamCommentLines.txt
+
+if [ -n "${annotationGtf}" ]; then 
+    annotationComment="@CO\tANNID:$(basename ${annotationGtf})"
+    echo -e ${annotationComment} >> ${starRefIndexDir}/bamCommentLines.txt
+fi
+if [ -n "${spikeInFa}" ]; then
+    spikeId=`echo ${spikeInFa} | cut -d . -f 2`
+    spikeInComment="@CO\tSPIKEID:${spikeId}"
+    echo -e ${spikeInComment} >> ${starRefIndexDir}/bamCommentLines.txt
+fi
+
