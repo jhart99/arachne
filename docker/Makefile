@@ -21,7 +21,7 @@ ${subdirs}:
 release: OPTS = release
 release: all
 
-clean: OPTS = clean
-clean: all
-
+clean:
+	find . -name release -exec rm '{}' \;
+	find . -name build -exec rm '{}' \;
 
