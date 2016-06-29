@@ -1,0 +1,22 @@
+[Unit]
+Description=Docker Swarm
+After=docker.service
+After=flanneld.service
+Requires=docker.service
+Requires=flanneld.service
+
+[Service]
+TimeoutStartSec=900
+ExecStartPre=-/usr/bin/docker kill $(docker ps -a -q -f name=swarm)
+ExecStartPre=-/usr/bin/docker rm $(docker ps -a -q -f name=swarm)
+ExecStartPre=/usr/bin/docker pull swarm
+ExecStart=/usr/bin/bash -c \
+"/usr/bin/docker run --rm --name swarm-%i -p 4000:2375 -p 3375:3375 \
+swarm --debug manage --replication --advertise swarm-%i.sky.vogt.local:4000 -c mesos-experimental --cluster-opt mesos.user=root --cluster-opt mesos.tasktimeout=1m --cluster-opt mesos.address=0.0.0.0 --cluster-opt mesos.offertimeout=1m --cluster-opt mesos.port=5050 zk://zk-1.sky.vogt.local:2181,zk-2.sky.vogt.local:2181,zk-3.sky.vogt.local:2181/mesos"
+ExecStop=-/usr/bin/docker rm -f swarm-%i
+Restart=always
+RestartSec=10s
+
+[X-Fleet]
+MachineMetadata=role=services
+Conflicts=swarm@*.service

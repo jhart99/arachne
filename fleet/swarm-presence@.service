@@ -1,0 +1,21 @@
+[Unit]
+Description=Mesos Master Announcer
+BindsTo=swarm@%i.service
+After=swarm@%i.service
+
+[Service]
+ExecStart=/bin/bash -c " \
+    while [ -n \"$IP\"]; do \
+        IP=$(getent hosts %H | awk '{ print $1 }'); \
+        sleep 1; \
+    done; \
+    while true; do \
+        etcdctl set --ttl 60 /skydns/local/vogt/sky/swarm-%i {\\\"host\\\":\\\"$IP\\\"} && \
+        etcdctl set --ttl 60 /skydns/local/vogt/sky/swarm/%i {\\\"host\\\":\\\"$IP\\\"}; \
+        sleep 45; \
+    done"
+Restart=always
+RestartSec=1s
+
+[X-Fleet]
+MachineOf=swarm@%i.service
