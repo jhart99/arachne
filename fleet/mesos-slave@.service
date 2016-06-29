@@ -14,8 +14,10 @@ ExecStartPre=/usr/bin/docker pull vogt1005.scripps.edu:5000/mesos-slave
 ExecStart=/usr/bin/bash -c \
 "/usr/bin/docker run --rm --name mesos-slave-%i -e MESOS_SLAVE_ID=%i -e GLOG_v=1 \
 -e ZK_LIST=zk://zk-1.sky.vogt.local:2181,zk-2.sky.vogt.local:2181,zk-3.sky.vogt.local:2181/mesos \
+-e MESOS_ISOLATOR=cgroups/cpu,cgroups/mem \
 --privileged --net=host -p 5051:5051 \
--v /sys:/sys -v /var/run/docker.sock:/var/run/docker.sock \
+-v /mnt:/mnt \
+-v /sys:/sys:ro -v /var/run/docker.sock:/var/run/docker.sock \
 vogt1005.scripps.edu:5000/mesos-slave slave.sh"
 ExecStop=-/usr/bin/docker rm -f mesos-slave-%i
 Restart=always

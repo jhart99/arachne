@@ -1,7 +1,7 @@
 FROM vogt1005.scripps.edu:5000/java7
 
 # install zookeeperd
-RUN curl http://apache.arvixe.com/zookeeper/zookeeper-3.5.1-alpha/zookeeper-3.5.1-alpha.tar.gz | \
+RUN curl http://apache.claz.org/zookeeper/zookeeper-3.5.1-alpha/zookeeper-3.5.1-alpha.tar.gz  | \
     tar xvz
 
 RUN mkdir /etc/zookeeper && \

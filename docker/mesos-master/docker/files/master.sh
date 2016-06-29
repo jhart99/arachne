@@ -13,12 +13,10 @@ function start_master {
   echo $ZK_LIST > /etc/mesos/zk
   echo 2 > /etc/mesos-master/quorum
   echo mesos-master-${MESOS_MASTER_ID}.sky.vogt.local > /etc/mesos-master/hostname
+  echo 'ULIMIT="-n 8192"' > /etc/default/mesos
 
   echo "info: Starting Mesos master..."
-  /usr/bin/mesos-init-wrapper master &
-  sleep 1
-  tail -f /var/log/mesos/mesos-master.INFO &
-  tail -f /var/log/mesos/mesos-master.WARNING &
+  /usr/bin/mesos-init-wrapper master --no-logger &
 
   # wait for the master to start
   sleep 1 && while [[ -z $(netstat -lnt | awk "\$6 == \"LISTEN\" && \$4 ~ \".5050\" && \$1 ~ tcp") ]] ; do

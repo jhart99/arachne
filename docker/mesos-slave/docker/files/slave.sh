@@ -22,13 +22,15 @@ function start_slave {
   echo '5mins' > /etc/mesos-slave/executor_registration_timeout
   echo mesos-slave-${MESOS_SLAVE_ID}.sky.vogt.local > /etc/mesos-slave/hostname
   echo 'posix' > /etc/mesos-slave/launcher
+  echo 'false' > /etc/mesos-slave/systemd_enable_support
+  echo 'ULIMIT="-n 8192"' > /etc/default/mesos
 
   # Wait for the hostname to resolve
   until ping -c 1 mesos-slave-${MESOS_SLAVE_ID}.sky.vogt.local; do
       echo "mesos-slave-${MESOS_SLAVE_ID} still not resolved"
       sleep 1
   done
-  /usr/bin/mesos-init-wrapper slave &
+  /usr/bin/mesos-init-wrapper slave --no-logger &
 
 
   # wait for the slave to start

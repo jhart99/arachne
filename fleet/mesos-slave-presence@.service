@@ -14,8 +14,11 @@ ExecStart=/bin/bash -c " \
         etcdctl set --ttl 60 /skydns/local/vogt/sky/mesos-slave/%i {\\\"host\\\":\\\"$IP\\\"}; \
         sleep 45; \
     done"
+ExecStop=/bin/bash -c " \
+    etcdctl del /skydns/local/vogt/sky/mesos-slave-%i && \
+    etcdctl del /skydns/local/vogt/sky/mesos-slave/%i; "
 Restart=always
-RestartSec=60s
+RestartSec=1s
 
 [X-Fleet]
 MachineOf=mesos-slave@%i.service

@@ -10,6 +10,9 @@ ExecStart=/bin/bash -c " \
         etcdctl set --ttl 60 /skydns/local/vogt/sky/chronos/%i {\\\"host\\\":\\\"%H\\\"} && \
         sleep 45; \
     done"
+ExecStop=/bin/bash -c " \
+    etcdctl del /skydns/local/vogt/sky/chronos-%i && \
+    etcdctl del /skydns/local/vogt/sky/chronos/%i ; "
 Restart=always
 RestartSec=1s
 
