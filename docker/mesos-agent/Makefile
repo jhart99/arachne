@@ -2,13 +2,13 @@ include env_make
 NS = vogt1005.scripps.edu:5000
 VERSION ?= latest
 
-IMAGE = java7
-NAME = java7
+IMAGE = mesos-agent
+NAME = mesos-agent
 INSTANCE = default
 
-.PHONY: buildclean push shell run start stop rm
+.PHONY: push shell run start stop rm 
 
-build: docker/Dockerfile
+build: docker/Dockerfile docker/files/agent.sh
 	docker build -t $(NS)/$(IMAGE):$(VERSION) docker
 	touch $@
 

@@ -14,6 +14,9 @@ JAVA_LIBRARY_PATH="/usr/local/lib:/lib:/usr/lib"
 LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:-/lib}"
 LD_LIBRARY_PATH="$JAVA_LIBRARY_PATH:$LD_LIBRARY_PATH"
 
+echo networkaddress.cache=0 >> $JAVA_HOME/jre/lib/security/java.security
+echo networkaddress.cachenegative=0 >> $JAVA_HOME/jre/lib/security/java.security
+
 # wait for the DNS to be set
 until ping -c 1 chronos-${CHRONOS_ID}.sky.vogt.local; do
     echo "chronos still not resolved"

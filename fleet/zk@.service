@@ -8,12 +8,12 @@ Requires=flanneld.service
 
 [Service]
 TimeoutStartSec=900
-ExecStartPre=-/usr/bin/docker kill $(docker ps -a -q -f name=zk)
-ExecStartPre=-/usr/bin/docker rm $(docker ps -a -q -f name=zk)
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill $(/usr/bin/docker ps -a -q -f name=zk)"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm $(/usr/bin/docker ps -a -q -f name=zk)"
 ExecStartPre=/usr/bin/docker pull vogt1005.scripps.edu:5000/zk
 ExecStart=/usr/bin/bash -c \
-"/usr/bin/docker run --rm --name zk-%i \
--e ZK_ID=%i -e ZK_N=3 vogt1005.scripps.edu:5000/zk"
+"sleep 15; /usr/bin/docker run --rm --name zk-%i --net=host \
+-e ZK_ID=%i -e ZK_N=5 vogt1005.scripps.edu:5000/zk"
 ExecStop=-/usr/bin/docker rm -f zk-%i
 Restart=always
 RestartSec=10s

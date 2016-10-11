@@ -2,13 +2,13 @@ include env_make
 NS = vogt1005.scripps.edu:5000
 VERSION ?= latest
 
-IMAGE = mesos-slave
-NAME = mesos-slave
+IMAGE = java8
+NAME = java8
 INSTANCE = default
 
-.PHONY: push shell run start stop rm 
+.PHONY: buildclean push shell run start stop rm
 
-build: docker/Dockerfile docker/files/slave.sh
+build: docker/Dockerfile
 	docker build -t $(NS)/$(IMAGE):$(VERSION) docker
 	touch $@
 

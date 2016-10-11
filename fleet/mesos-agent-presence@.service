@@ -1,0 +1,24 @@
+[Unit]
+Description=Mesos Agent Announcer
+BindsTo=mesos-agent@%i.service
+After=mesos-agent@%i.service
+
+[Service]
+ExecStart=/bin/bash -c " \
+    while [ -n \"$IP\"]; do \
+        IP=$(getent hosts %H | awk '{ print $1 }'); \
+        sleep 1; \
+    done; \
+    while true; do \
+        etcdctl set --ttl 60 /skydns/local/vogt/sky/mesos-agent-%i {\\\"host\\\":\\\"$IP\\\"} && \
+        etcdctl set --ttl 60 /skydns/local/vogt/sky/mesos-agent/%i {\\\"host\\\":\\\"$IP\\\"}; \
+        sleep 45; \
+    done"
+ExecStop=/bin/bash -c " \
+    etcdctl rm /skydns/local/vogt/sky/mesos-agent-%i && \
+    etcdctl rm /skydns/local/vogt/sky/mesos-agent/%i; "
+Restart=always
+RestartSec=5s
+
+[X-Fleet]
+MachineOf=mesos-agent@%i.service

@@ -7,10 +7,10 @@ RUN apt-get update && \
     echo "deb https://apt.dockerproject.org/repo debian-jessie main" > /etc/apt/sources.list.d/docker.list && \
     apt-get update && \
     DEBIAN_FRONTEND="noninteractive" \
-    apt-get -y --no-install-recommends install docker-engine=1.8.3-0~jessie && \
+    apt-get -y --no-install-recommends install docker-engine=1.10.3-0~jessie && \
     ln -sf /usr/bin/docker.io /usr/local/bin/docker && \
     rm -rf /var/lib/apt/lists/*
 
 
-ADD files/slave.sh /usr/local/bin
-CMD slave.sh
+ADD files/agent.sh /usr/local/bin
+CMD agent.sh

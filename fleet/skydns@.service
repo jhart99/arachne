@@ -12,7 +12,7 @@ ExecStartPre=-/usr/bin/docker rm $(docker ps -a -q -f name=skydns)
 ExecStartPre=/usr/bin/docker pull skynetservices/skydns
 ExecStart=/usr/bin/bash -c \
 "/usr/bin/docker run --rm --name skydns-%i --net=host \
--e ETCD_MACHINES=http://controller1.vogt.local:2379,http://controller2.vogt.local:2379,http://controller3.vogt.local:2379 -e SKYDNS_ADDR=0.0.0.0:53 -e SKYDNS_NAMESERVERS=192.168.1.1:53 skynetservices/skydns "
+-e ETCD_MACHINES=http://controller1.vogt.local:2379,http://controller2.vogt.local:2379,http://controller3.vogt.local:2379,http://controller4.vogt.local:2379,http://controller5.vogt.local:2379 -e SKYDNS_ADDR=0.0.0.0:53 -e SKYDNS_NAMESERVERS=192.168.1.1:53 skynetservices/skydns "
 ExecStartPost=/usr/bin/etcdctl set /skydns/config '{"domain":"sky.vogt.local.", "nameservers":["192.168.1.1:53"], "dns_addr":"0.0.0.0:53"}'
 ExecStop=-/usr/bin/docker rm -f skydns-%i
 Restart=always

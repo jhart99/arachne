@@ -1,0 +1,28 @@
+[Unit]
+Description=Mesos Agent
+After=docker.service
+After=fleet.service
+After=flanneld.service
+Requires=docker.service
+Requires=flanneld.service
+
+[Service]
+TimeoutStartSec=900
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill $(docker ps -a -q -f name=mss)"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm $(docker ps -a -q -f name=mss)"
+ExecStartPre=/usr/bin/docker pull vogt1005.scripps.edu:5000/mesos-agent
+ExecStart=/usr/bin/bash -c \
+"/usr/bin/docker run --rm --name mss-%i -e MESOS_SLAVE_ID=%i -e GLOG_v=1 \
+-e ZK_LIST=zk://zk-1.sky.vogt.local:2181,zk-2.sky.vogt.local:2181,zk-3.sky.vogt.local:2181,zk-4.sky.vogt.local:2181,zk-5.sky.vogt.local:2181/mesos \
+-e MESOS_ISOLATOR=cgroups/cpu,cgroups/mem \
+--privileged --net=host -p 5051:5051 --pid=host \
+-v /mnt:/mnt \
+-v /sys:/sys:ro -v /var/run/docker.sock:/var/run/docker.sock \
+vogt1005.scripps.edu:5000/mesos-agent agent.sh"
+ExecStop=-/usr/bin/docker rm -f mss-%i
+Restart=always
+RestartSec=10s
+
+[X-Fleet]
+Conflicts=mesos-agent@*.service
+Conflicts=mesos-master@*.service

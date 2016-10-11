@@ -17,20 +17,39 @@ function start_slave {
   echo "info: Starting slave..."
 
   echo $ZK_LIST > /etc/mesos/zk
+  mkdir /etc/mesos-slave
   echo /var/lib/mesos > /etc/mesos-slave/work_dir
   echo 'docker,mesos' > /etc/mesos-slave/containerizers
   echo '5mins' > /etc/mesos-slave/executor_registration_timeout
-  echo mesos-slave-${MESOS_SLAVE_ID}.sky.vogt.local > /etc/mesos-slave/hostname
+  echo mesos-agent-${MESOS_SLAVE_ID}.sky.vogt.local > /etc/mesos-slave/hostname
   echo 'posix' > /etc/mesos-slave/launcher
   echo 'false' > /etc/mesos-slave/systemd_enable_support
   echo 'ULIMIT="-n 8192"' > /etc/default/mesos
+  echo /var/log/mesos > /etc/mesos-slave/log_dir
 
+  mkdir /etc/mesos-agent
+  echo /var/lib/mesos > /etc/mesos-agent/work_dir
+  echo 'docker,mesos' > /etc/mesos-agent/containerizers
+  echo '5mins' > /etc/mesos-agent/executor_registration_timeout
+  echo mesos-agent-${MESOS_SLAVE_ID}.sky.vogt.local > /etc/mesos-agent/hostname
+  echo 'posix' > /etc/mesos-agent/launcher
+  echo 'false' > /etc/mesos-agent/systemd_enable_support
+  echo 'ULIMIT="-n 8192"' > /etc/default/mesos
+  echo /var/log/mesos > /etc/mesos-agent/log_dir
+
+
+  
+  echo networkaddress.cache=0 >> $JAVA_HOME/jre/lib/security/java.security
+  echo networkaddress.cachenegative=0 >> $JAVA_HOME/jre/lib/security/java.security
+  sleep 45
   # Wait for the hostname to resolve
-  until ping -c 1 mesos-slave-${MESOS_SLAVE_ID}.sky.vogt.local; do
-      echo "mesos-slave-${MESOS_SLAVE_ID} still not resolved"
-      sleep 1
-  done
-  /usr/bin/mesos-init-wrapper slave --no-logger &
+#  until ping -c 1 mesos-slave-${MESOS_SLAVE_ID}.sky.vogt.local; do
+#      echo "mesos-slave-${MESOS_SLAVE_ID} still not resolved"
+#      sleep 1
+#  done
+  
+  set -e
+  /usr/bin/mesos-init-wrapper slave &
 
 
   # wait for the slave to start
@@ -41,4 +60,6 @@ function start_slave {
   echo "info: Mesos slave started on port 5051"
 }
 start_slave
+sleep 10
+tail -f /var/log/mesos/*
 wait

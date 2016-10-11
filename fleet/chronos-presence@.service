@@ -1,7 +1,6 @@
 [Unit]
 Description=chronos announcer
 BindsTo=chronos@%i.service
-After=chronos@%i.service
 
 [Service]
 ExecStart=/bin/bash -c " \
@@ -11,10 +10,10 @@ ExecStart=/bin/bash -c " \
         sleep 45; \
     done"
 ExecStop=/bin/bash -c " \
-    etcdctl del /skydns/local/vogt/sky/chronos-%i && \
-    etcdctl del /skydns/local/vogt/sky/chronos/%i ; "
+    etcdctl rm /skydns/local/vogt/sky/chronos-%i && \
+    etcdctl rm /skydns/local/vogt/sky/chronos/%i ; "
 Restart=always
-RestartSec=1s
+RestartSec=5s
 
 [X-Fleet]
 MachineOf=chronos@%i.service
