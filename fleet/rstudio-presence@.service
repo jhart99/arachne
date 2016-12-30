@@ -1,0 +1,24 @@
+[Unit]
+Description=Rstudio Announcer
+BindsTo=rstudio@%i.service
+After=rstudio@%i.service
+
+[Service]
+ExecStart=/bin/bash -c " \
+    while [ -n \"$IP\"]; do \
+        IP=$(getent hosts %H | awk '{ print $1 }'); \
+        sleep 1; \
+    done; \
+    while true; do \
+        etcdctl set --ttl 60 /skydns/local/vogt/sky/rstudio-%i {\\\"host\\\":\\\"$IP\\\"} && \
+        etcdctl set --ttl 60 /skydns/local/vogt/sky/rstudio/%i {\\\"host\\\":\\\"$IP\\\"}; \
+        sleep 45; \
+    done"
+ExecStop=/bin/bash -c " \
+    etcdctl rm /skydns/local/vogt/sky/rstudio-%i && \
+    etcdctl rm /skydns/local/vogt/sky/rstudio/%i; "
+Restart=always
+RestartSec=5s
+
+[X-Fleet]
+MachineOf=rstudio@%i.service

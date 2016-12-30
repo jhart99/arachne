@@ -1,0 +1,10 @@
+default:
+    spark.master: mesos://zk://zk-1.sky.vogt.local:2181,zk-2.sky.vogt.local:2181,zk-3.sky.vogt.local:2181,zk-4.sky.vogt.local:2181,zk-5.sky.vogt.local:2181/mesos
+    spark.mesos.executor.docker.image: vogt1005.scripps.edu:5000/spark:latest
+    spark.mesos.executor.home: /usr/local/spark
+    spark.mesos.coarse: true
+    spark.executor.cores: 1
+    spark.cores.max: 32
+
+    spark.eventLog.enabled: false
+    spark.serializer: org.apache.spark.serializer.JavaSerializer

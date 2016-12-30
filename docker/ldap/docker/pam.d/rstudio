@@ -1,0 +1,5 @@
+auth [success=ok default=ignore] pam_ldap.so minimum_uid=1000
+# auth    required    pam_pwdfile.so  pwdfile=/etc/rstudio/passwd
+account required    pam_permit.so
+session required    pam_permit.so
+password    required    pam_deny.so

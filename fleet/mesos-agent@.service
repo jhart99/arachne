@@ -9,7 +9,7 @@ Requires=flanneld.service
 [Service]
 TimeoutStartSec=900
 ExecStartPre=-/bin/bash -c "/usr/bin/docker kill $(docker ps -a -q -f name=mss)"
-ExecStartPre=-/bin/bash -c "/usr/bin/docker rm $(docker ps -a -q -f name=mss)"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm -f $(docker ps -a -q -f name=mss)"
 ExecStartPre=/usr/bin/docker pull vogt1005.scripps.edu:5000/mesos-agent
 ExecStart=/usr/bin/bash -c \
 "/usr/bin/docker run --rm --name mss-%i -e MESOS_SLAVE_ID=%i -e GLOG_v=1 \

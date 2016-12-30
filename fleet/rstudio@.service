@@ -1,0 +1,21 @@
+[Unit]
+Description=Rstudio
+After=docker.service
+After=fleet.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=900
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill $(/usr/bin/docker ps -a -q -f name=rstudio)"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm $(/usr/bin/docker ps -a -q -f name=rstudio)"
+ExecStartPre=/usr/bin/docker pull vogt1005.scripps.edu:5000/spark-rstudio
+ExecStart=/usr/bin/bash -c \
+"sleep 15; /usr/bin/docker run --rm --name rstudio-%i -p 8788:8788 \
+-v /home:/home vogt1005.scripps.edu:5000/spark-rstudio"
+ExecStop=-/usr/bin/docker rm -f rstudio-%i
+Restart=always
+RestartSec=10s
+
+[X-Fleet]
+Conflicts=rstudio@*.service
+MachineMetadata=role=worker

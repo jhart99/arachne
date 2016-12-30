@@ -1,0 +1,18 @@
+FROM vogt1005.scripps.edu:5000/java8
+WORKDIR /usr/local
+
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN echo "deb http://repos.mesosphere.io/$(lsb_release -is | tr '[:upper:]' '[:lower:]') $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/mesosphere.list
+
+RUN apt-get update && apt-get -y --force-yes upgrade && \
+    apt-get -y --force-yes install --no-install-recommends wget scala maven python git \
+        curl python-setuptools python-pip python-dev python-protobuf \
+        mesos zookeeper
+
+RUN curl http://apache.mirrors.tds.net/spark/spark-2.0.0/spark-2.0.0-bin-hadoop2.7.tgz | \
+    tar xvz && \
+    ln -s spark-2.0.0-bin-hadoop2.7 spark
+
+ENV SPARK_HOME /usr/local/spark
+ENV MESOS_NATIVE_JAVA_LIBRARY /usr/local/lib/libmesos.so
