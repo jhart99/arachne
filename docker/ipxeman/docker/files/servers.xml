@@ -1,0 +1,7 @@
+<servers>
+    <server mac="" hostname="controller1.vogt.local" default="coreos-bci" menu="menu-controller.ipxe"/>
+    <server mac="" hostname="controller2.vogt.local" default="coreos-bci" menu="menu-controller.ipxe"/>
+    <server mac="" hostname="controller3.vogt.local" default="coreos-bci" menu="menu-controller.ipxe"/>
+    <server mac="" hostname="controller4.vogt.local" default="coreos-bci" menu="menu-controller.ipxe"/>
+    <server mac="" hostname="controller5.vogt.local" default="coreos-bci" menu="menu-controller.ipxe"/>
+</servers>

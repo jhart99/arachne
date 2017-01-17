@@ -1,0 +1,3 @@
+<servers>
+    <server mac="" hostname="controller1.vogt.local" default="coreos-bci" menu="menu-controller.ipxe"/>
+</servers>
