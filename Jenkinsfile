@@ -12,10 +12,12 @@ podTemplate(label: 'docker', containers: [
                 def commit_id = readFile('.git/commit-id').trim()
                 println commit_id
             
-                stage "build"
-                container('docker') {
-                    def app = docker.build("vogt1005.scripps.edu:5000/java8")
-                    app.push "${commit_id}"
+                stage("build") {
+                    container('docker') {
+                        dir('docker/java8/docker') {
+                            def app = docker.build("vogt1005.scripps.edu:5000/java8")
+                        }
+                    }
                 }
             
             }
