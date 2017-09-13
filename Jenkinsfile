@@ -1,6 +1,6 @@
 podTemplate(label: 'docker', containers: [
     containerTemplate(name: 'docker', image: 'docker:1.12.6', ttyEnabled: true, command: '/bin/sh -c', args: 'cat'),
-    containerTemplate(name: 'jnlp', image: 'jenkinsci/jnlp-slave', args'${computer.jnlpmac}, ${computer.name}')
+    containerTemplate(name: 'jnlp', image: 'jenkinsci/jnlp-slave', args: '${computer.jnlpmac}, ${computer.name}')
     ], volumes: [
     hostPathVolume(hostPath: '/var/run/docker.sock', mountPath: '/var/run/docker.sock')]
     ) {
