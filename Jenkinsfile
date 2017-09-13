@@ -7,7 +7,7 @@ podTemplate(label: 'docker', containers: [
 
         node('docker') {
             docker.withRegistry('vogt1005.scripps.edu:5000') {
-                git url: "jhart99/arachne"
+                git url: "https://github.com/jhart99/arachne.git"
                 sh "git rev-parse HEAD > .git/commit-id"
                 def commit_id = readFile('.git/commit-id').trim()
                 println commit_id
