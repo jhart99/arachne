@@ -14,7 +14,9 @@ podTemplate(label: 'docker', containers: [
             
                 stage "build"
                 container('docker') {
-                    def app = docker.build("docker/java8/docker")
+                    dir('docker/java8/docker') {
+                        def app = docker.build("docker/java8/docker")
+                    }
                 }
             
             }
