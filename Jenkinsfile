@@ -13,7 +13,9 @@ podTemplate(label: 'docker', containers: [
                 println commit_id
             
                 stage "build"
-                def app = docker.build("docker/java8/docker")
+                container('docker') {
+                    def app = docker.build("docker/java8/docker")
+                }
             
             }
         }
