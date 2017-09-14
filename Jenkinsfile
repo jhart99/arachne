@@ -22,7 +22,7 @@ podTemplate(label: 'docker', containers: [
             echo commit
             stage("build") {
                 container('docker') {
-                    dir "docker/ldap/docker" {
+                    dir("docker/ldap/docker"){
                        sh "docker build -t vogt1005.scripps.edu:5000/ldap:${commit} ."
                     }
                 }
