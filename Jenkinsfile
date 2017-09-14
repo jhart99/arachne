@@ -24,8 +24,8 @@ podTemplate(label: 'docker', containers: [
             for (container in containers) {
                 stage("build $container") {
                     container('docker') {
-                        dir("docker/$container/docker"){
-                            sh "docker build -t vogt1005.scripps.edu:5000/$container:${commit} ."
+                        dir("docker/${container}/docker"){
+                            sh "docker build -t vogt1005.scripps.edu:5000/${container}:${commit} ."
                         }
                     }
                 }
@@ -37,8 +37,8 @@ podTemplate(label: 'docker', containers: [
                 stage("deploy $container") {
                     container('docker') {
                         sh """
-                            docker tag vogt1005.scripps.edu:5000/$container:${commit} vogt1005.scripps.edu:5000/$container:latest
-                            docker push vogt1005.scripps.edu:5000/$container:latest
+                            docker tag vogt1005.scripps.edu:5000/${container}:${commit} vogt1005.scripps.edu:5000/${container}:latest
+                            docker push vogt1005.scripps.edu:5000/${container}:latest
                             """
                     }
                 }
