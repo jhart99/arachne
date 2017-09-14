@@ -11,13 +11,13 @@ podTemplate(label: 'docker', containers: [
         hostPathVolume(hostPath: '/var/run/docker.sock',
             mountPath: '/var/run/docker.sock')]
 ) {
-    checkout scm
     //git url: "https://github.com/jhart99/arachne.git"
     //    sh "git rev-parse HEAD > .git/commit-id"
     //    def commit_id = readFile('.git/commit-id').trim()
     //    println commit_id
 
     node('docker') {
+        checkout scm
         container('docker') {
             sh """
                 docker build -t vogt1005.scripps.edu:5000/ldap:latest .
