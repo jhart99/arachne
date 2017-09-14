@@ -18,9 +18,13 @@ podTemplate(label: 'docker', containers: [
 
     node('docker') {
         checkout scm
+        commit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+        echo commit
+        stage("build") {
         container('docker') {
+            dir "docker/ldap/docker"
             sh """
-                docker build -t vogt1005.scripps.edu:5000/ldap:latest .
+                docker build -t vogt1005.scripps.edu:5000/ldap:${commit} .
                 """
         }
     }
