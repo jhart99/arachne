@@ -1,8 +1,9 @@
-FROM debian:jessie
+FROM debian:stretch
 
 RUN apt-get -y update && \
     DEBIAN_FRONTEND="noninteractive" \
-    apt-get --no-install-recommends install -y libnss-ldapd ldap-utils libpam-ldap nscd
+    apt-get --no-install-recommends install -y libnss-ldapd ldap-utils libpam-ldap nscd && \
+    rm -rf /var/lib/apt/lists/*
 
 ADD nsswitch.conf /etc/
 ADD nslcd.conf /etc/
