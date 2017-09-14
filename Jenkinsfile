@@ -1,3 +1,4 @@
+def containers = ["ldap']
 podTemplate(label: 'docker', containers: [
         containerTemplate(name: 'docker',
             image: 'docker:1.12.6',
@@ -20,23 +21,24 @@ podTemplate(label: 'docker', containers: [
         checkout scm
         commit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
         echo commit
-        stage("build") {
+        for (container in containers) {
+        stage("build $container") {
             container('docker') {
-                dir("docker/ldap/docker"){
-                    sh "docker build -t vogt1005.scripps.edu:5000/ldap:${commit} ."
+                dir("docker/$container/docker"){
+                    sh "docker build -t vogt1005.scripps.edu:5000/$container:${commit} ."
                 }
             }
         }
-        stage("test") {
+        stage("test $container") {
             container('docker') {
                 sh "echo test passed"
             }
         }
-        stage("deploy") {
+        stage("deploy $container") {
             container('docker') {
                 sh """
-                    docker tag vogt1005.scripps.edu:5000/ldap:${commit} vogt1005.scripps.edu:5000/ldap:latest
-                    docker push vogt1005.scripps.edu:5000/ldap:latest
+                    docker tag vogt1005.scripps.edu:5000/$container:${commit} vogt1005.scripps.edu:5000/$container:latest
+                    docker push vogt1005.scripps.edu:5000/$container:latest
                     """
             }
         }
