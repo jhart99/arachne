@@ -1,4 +1,4 @@
-def containers = ["ldap']
+def containers = ["ldap"]
 podTemplate(label: 'docker', containers: [
         containerTemplate(name: 'docker',
             image: 'docker:1.12.6',
