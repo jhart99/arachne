@@ -1,4 +1,4 @@
-def containers = ["dhcp", "python2.7", "ipxeman", "ldap", "java8", "spark"]
+def containers = ["dhcp", "python2.7", "ipxeman", "ldap", "java8", "spark", "spark-rstudio"]
 def dversion = '1.12.6'
 podTemplate(label: 'dockerpod', containers: [
         containerTemplate(name: 'docker',
