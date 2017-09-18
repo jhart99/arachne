@@ -1,5 +1,5 @@
 def containers = ["ldap"]
-podTemplate(label: 'docker', containers: [
+podTemplate(label: 'dockerpod', containers: [
         containerTemplate(name: 'docker',
             image: 'docker:1.12.6',
             ttyEnabled: true,
@@ -17,15 +17,17 @@ podTemplate(label: 'docker', containers: [
     //    def commit_id = readFile('.git/commit-id').trim()
     //    println commit_id
 
-    node('docker') {
+    node('dockerpod') {
         checkout scm
             commit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
             echo commit
             for (container in containers) {
                 stage("build $container") {
+                    container('docker') {
                         dir("docker/${container}/docker"){
                             sh "docker build -t vogt1005.scripps.edu:5000/${container}:${commit} ."
                         }
+                    }
                 }
                 stage("test $container") {
                     container('docker') {
