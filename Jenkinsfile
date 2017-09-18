@@ -1,4 +1,4 @@
-def containers = ["ldap", "java8]
+def containers = ["ldap", "java8"]
 def dversion = '1.12.6'
 podTemplate(label: 'dockerpod', containers: [
         containerTemplate(name: 'docker',
