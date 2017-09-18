@@ -4,7 +4,7 @@ WORKDIR /usr/local
 
 RUN apt-get update && \
     DEBIAN_FRONTEND="noninteractive" \
-    apt-get -y --no-install-recommends install curl tzdata tzdata-java \
+    apt-get -y --no-install-recommends install curl tzdata \
        libpython-stdlib libpython2.7-minimal libpython2.7-stdlib \
        lsb-release mime-support python python-minimal python2.7 python2.7-minimal && \
     echo "deb http://ftp.debian.org/debian stretch main contrib non-free" >> /etc/apt/sources.list && \
