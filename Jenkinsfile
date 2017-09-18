@@ -21,21 +21,17 @@ podTemplate(label: 'dockerpod', containers: [
         checkout scm
             commit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
             echo commit
-            for (container in containers) {
-                stage("build $container") {
-                    container('docker') {
+            container('docker') {
+                for (container in containers) {
+                    stage("build $container") {
                         dir("docker/${container}/docker"){
                             sh "docker build -t vogt1005.scripps.edu:5000/${container}:${commit} ."
                         }
                     }
-                }
-                stage("test $container") {
-                    container('docker') {
+                    stage("test $container") {
                         sh "echo test passed"
                     }
-                }
-                stage("deploy $container") {
-                    container('docker') {
+                    stage("deploy $container") {
                         sh """
                             docker tag vogt1005.scripps.edu:5000/${container}:${commit} vogt1005.scripps.edu:5000/${container}:latest
                             docker push vogt1005.scripps.edu:5000/${container}:latest
