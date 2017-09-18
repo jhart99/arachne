@@ -22,7 +22,10 @@ podTemplate(label: 'docker', containers: [
             commit = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
             echo commit
             for (container in containers) {
+                sh "echo line coming"
+                sh "echo line $container"
                 stage("build $container") {
+                    sh "echo line passed"
                     container('docker') {
                         dir("docker/${container}/docker"){
                             sh "docker build -t vogt1005.scripps.edu:5000/${container}:${commit} ."
