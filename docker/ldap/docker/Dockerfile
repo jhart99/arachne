@@ -6,6 +6,5 @@ RUN apt-get -y update && \
     rm -rf /var/lib/apt/lists/*
 
 ADD nsswitch.conf /etc/
-ADD nslcd.conf /etc/
 ADD ldap.* /etc/
 ADD pam.d /etc/pam.d/
