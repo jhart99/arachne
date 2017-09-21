@@ -52,16 +52,6 @@ RUN apt-get update \
     && rm -rf /tmp/downloaded_packages/ /tmp/*.rds \
     && rm -rf /var/lib/apt/lists/*
 
-# Install all the packages we could want. Starting with the fragile snowflakes
-ADD bioc.r /usr/local/bin/bioc.r
-RUN MAKE="make -j16" R CMD javareconf && install.r rJava && \
-    MAKE="make -j16" install.r --error httr && \
-    MAKE="make -j16" bioc.r --error biomaRt && \
-    rm -rf /tmp/downloaded_packages/ /tmp/*.rds
-RUN MAKE="make -j16" install.r --error adabag AER akima ape asd BayesDA boot car caert cgdsr checkmate chron class cluster coda coin colorspace compute.es corrplot coxme curl DAAG data.table DBI digest doBy doMC doParallel DoseFinding dplyr drc e1071 effects ellipse entropy fastICA fields foreach foreign formatR Formula fpc gamm4 gdata gee geepack GGally ggdendro ggplot2 GGtools GLMMGibbs gplots grDevices grid gridBase gridExtra gsDesign gtable hexbin HH highr Hmisc httpuv httr inline intervals ISwR iterators jsonlite kernlab KernSmooth knitr Lahman lattice lawstat lazyeval lme4 lmtest magrittr maps markdown marray MASS Matrix MatrixModels mboost mda mgcv microbenchmark mlbench multcomp multicore mvtnorm mvtnormAPI nlme nloptr nnet nws openssl parallel party pbkrtest pls plyr polspline pROC pryr pspline psych quantreg R6 Rcpp RcppEigen RCurl readr reshape reshape2 rex rggobi rjags rjson Rmpi robust robustbase rootSolve rpart rprojroot rpmv rrcov RSQLite rstan rtracklayer RUnit runjags sandwich scales scrapeR sem shiny snow sparklyr SparkR SparseM spatial splines stringi stringr strucchange survival Sxslt testthat tibble timeDate timeSeries tree treemap tseries TTR uuid vcd VGAM xgobi xlsx XML xtable xts XVector zoo && \
-    rm -rf /tmp/downloaded_packages/ /tmp/*.rds
-RUN MAKE="make -j16" bioc.r --error affy affydata annotate AnnotationDbi AnnotationHub baySeq Biobase biomaRt Biostrings BSgenome convert ctc DESeq DESeq2 EBSeq edgeR ExomeDepth genefilter GenomeInfoDb genomeIntervals GenomicAlignments GenomicFeatures GenomicRanges GEOquery GO.db golubEsets IRanges KEGG.db KEGGgraph limma microRNA Rsamtools
-
 # Now install Rstudio
 ## Add RStudio binaries to PATH
 ENV PATH /usr/lib/rstudio-server/bin/:$PATH
@@ -108,6 +98,16 @@ RUN echo '\n\
 \nif(is.na(Sys.getenv("HTTR_LOCALHOST", unset=NA))) { \
 \n  options(httr_oob_default = TRUE) \
 \n}' >> /etc/R/Rprofile.site
+
+# Install all the packages we could want. Starting with the fragile snowflakes
+ADD bioc.r /usr/local/bin/bioc.r
+RUN MAKE="make -j16" R CMD javareconf && install.r rJava && \
+    MAKE="make -j16" install.r --error httr && \
+    MAKE="make -j16" bioc.r --error biomaRt && \
+    rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+RUN MAKE="make -j16" install.r --error adabag AER akima ape asd BayesDA boot car caert cgdsr checkmate chron class cluster coda coin colorspace compute.es corrplot coxme curl DAAG data.table DBI digest doBy doMC doParallel DoseFinding dplyr drc e1071 effects ellipse entropy fastICA fields foreach foreign formatR Formula fpc gamm4 gdata gee geepack GGally ggdendro ggplot2 GGtools GLMMGibbs gplots grDevices grid gridBase gridExtra gsDesign gtable hexbin HH highr Hmisc httpuv httr inline intervals ISwR iterators jsonlite kernlab KernSmooth knitr Lahman lattice lawstat lazyeval lme4 lmtest magrittr maps markdown marray MASS Matrix MatrixModels mboost mda mgcv microbenchmark mlbench multcomp multicore mvtnorm mvtnormAPI nlme nloptr nnet nws openssl parallel party pbkrtest pls plyr polspline pROC pryr pspline psych quantreg R6 Rcpp RcppEigen RCurl readr reshape reshape2 rex rggobi rjags rjson Rmpi robust robustbase rootSolve rpart rprojroot rpmv rrcov RSQLite rstan rtracklayer RUnit runjags sandwich scales scrapeR sem shiny snow sparklyr SparkR SparseM spatial splines stringi stringr strucchange survival Sxslt testthat tibble timeDate timeSeries tree treemap tseries TTR uuid vcd VGAM xgobi xlsx XML xtable xts XVector zoo && \
+    rm -rf /tmp/downloaded_packages/ /tmp/*.rds
+RUN MAKE="make -j16" bioc.r --error affy affydata annotate AnnotationDbi AnnotationHub baySeq Biobase biomaRt Biostrings BSgenome convert ctc DESeq DESeq2 EBSeq edgeR ExomeDepth genefilter GenomeInfoDb genomeIntervals GenomicAlignments GenomicFeatures GenomicRanges GEOquery GO.db golubEsets IRanges KEGG.db KEGGgraph limma microRNA Rsamtools
 
 RUN echo "PATH=$PATH" >> /etc/R/Renviron.site
 
