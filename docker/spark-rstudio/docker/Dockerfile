@@ -111,10 +111,6 @@ RUN echo '\n\
 
 RUN echo "PATH=$PATH" >> /etc/R/Renviron.site
 
-## Use s6
-RUN wget -P /tmp/ https://github.com/just-containers/s6-overlay/releases/download/v1.11.0.1/s6-overlay-amd64.tar.gz \
-  && tar xzf /tmp/s6-overlay-amd64.tar.gz -C /
-
 RUN cp /etc/nslcd.conf /etc/pam_ldap.conf
 RUN echo "www-port=8788" > /etc/rstudio/rserver.conf
 COPY userconf.sh /etc/cont-init.d/conf
@@ -123,4 +119,4 @@ COPY run.sh /etc/services.d/rstudio/run
 COPY rstudio /etc/pam.d/
 EXPOSE 8788
 
-CMD ["/init"]
+CMD ["/etc/services.d/rstudio/run"]
