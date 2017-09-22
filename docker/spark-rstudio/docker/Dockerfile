@@ -77,7 +77,7 @@ RUN rm -rf /var/lib/apt/lists/ \
     psmisc \
     python-setuptools \
     sudo \
-  && VER=1.0.153 \
+  && VER=1.0.143 \
   && wget -q https://s3.amazonaws.com/rstudio-dailybuilds/rstudio-server-${VER}-amd64.deb \
   && dpkg -i rstudio-server-${VER}-amd64.deb \
   && rm rstudio-server-*-amd64.deb \
